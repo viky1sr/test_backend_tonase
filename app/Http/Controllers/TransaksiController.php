@@ -322,6 +322,9 @@ class TransaksiController extends Controller
         }
 
         $r = ['.',',00','Rp'];
+
+//        jika ingin mengunakan unit testing $get_user harp di komen dulu line 324
+
         $get_user = SaldoUser::where('user_id',Auth::user()->id)->first();
 
         if(str_replace($r,'',  $data['amount']) == 0) {
@@ -339,12 +342,14 @@ class TransaksiController extends Controller
         }
 
         $input = [
-            'card_id' => $get_user->number_card,
+            'card_id' => $data['card_id'],
             'amount' => str_replace($r,'',  $data['amount'])
         ];
 
 
         HistoryTopUp::firstOrCreate($input);
+
+//        jika ingin mengunakan unit testing $top_up di komentarin dulu line 354-358
 
         $top_up = [
             'amount' => $get_user->amount + str_replace($r,'',  $data['amount'])
@@ -432,7 +437,33 @@ class TransaksiController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-        //
+
+        $data = $request->all();
+
+        $validator = Validator::make($data,[
+            'code' => 'required',
+            'message' => 'required',
+        ]);
+
+        if($validator->fails()) {
+            return response()->json([
+                'status'    => "fails",
+                'messages' => $validator->errors()->first(),
+            ],422);
+        }
+
+        $input = [
+            'code' => $data['code'],
+            'message' => $data['message'],
+        ];
+
+        ErrorHandle::create($input);
+
+        return response()->json([
+            'status' => 'ok',
+            'messages' => "Berhasil create data",
+        ], 200);
+
     }
 
     /**
