@@ -27,7 +27,7 @@ class TransaksiController extends Controller
     {
         if(\request()->ajax()) {
 
-            $data =Activity::where('log_name','Transfer_Saldo')
+            $data = Activity::where('log_name','Transfer_Saldo')
                 ->whereHas('historytf', function ($query)  {
                     $get_user_id_saldo = SaldoUser::where('user_id', Auth::user()->id)->first();
                     if($get_user_id_saldo) {
@@ -56,7 +56,6 @@ class TransaksiController extends Controller
                 ->addColumn('name_info', function ($data) {
                     foreach($data->properties as $i) {
                         $get_name = User::where('id',$i['pengirim'])->first();
-                        $status_menerima = [];
                         $status_pengirim = [];
 
                         foreach ($i['saldo_penerima'] as $penerima) {
@@ -65,8 +64,6 @@ class TransaksiController extends Controller
 
                         if($data->causer_id === Auth::user()->id) {
                             $status_pengirim = 'Mentransfer';
-                        } else {
-                            $status_menerima = 'DiTransfer';
                         }
 
                         return $status_pengirim ? "To : "."". $get_name_penerima->user->name : "Form : "."". $get_name->name;
@@ -75,7 +72,6 @@ class TransaksiController extends Controller
 
                 ->addColumn('amount_info', function ($data) {
                     foreach($data->properties as $i) {
-                        $get_name = User::where('id',$i['pengirim'])->first();
                         $amount_menerima = [];
                         $amount_pengirim = [];
                         $get_cuaser = $data->causer_id === Auth::user()->id;
@@ -106,7 +102,6 @@ class TransaksiController extends Controller
                             } else {
                                foreach($i['saldo_pengirim'] as $card_menerima) {
                                    $nbcard_menerima =  $card_menerima['number_card'];
-//                                   dd($card_menerima['number_card']);
                                }
                             }
                             return ($get_cuaser) ? $nbcard_pengirim : $nbcard_menerima ;
