@@ -323,7 +323,7 @@ class TransaksiController extends Controller
 
         $r = ['.',',00','Rp'];
 
-//        jika ingin mengunakan unit testing $get_user harp di komen dulu line 324
+//        jika ingin mengunakan unit testing $get_user harp di komen dulu line 328
 
         $get_user = SaldoUser::where('user_id',Auth::user()->id)->first();
 
@@ -342,7 +342,7 @@ class TransaksiController extends Controller
         }
 
         $input = [
-            'card_id' => $data['card_id'],
+            'card_id' =>  $get_user->number_card,
             'amount' => str_replace($r,'',  $data['amount'])
         ];
 

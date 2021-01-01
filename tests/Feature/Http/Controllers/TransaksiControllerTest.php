@@ -30,8 +30,7 @@ class TransaksiControllerTest extends TestCase
      */
     public function it_store()
     {
-
-
+//        jika ingin mengrun unti testing harap komentar Transaksi Controller Line => 328 dan 354-358
 
         $user = SaldoUser::where('number_card',20207071997)->first();
 
