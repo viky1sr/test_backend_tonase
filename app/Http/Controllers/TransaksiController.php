@@ -33,6 +33,8 @@ class TransaksiController extends Controller
                     if($get_user_id_saldo) {
                         $query->where('penerima',$get_user_id_saldo->number_card);
                         $query->orWhere('pengirim', Auth::user()->id);
+                    } else {
+                        $query->where('pengirim', Auth::user()->id);
                     }
                 })
                 ->get();
