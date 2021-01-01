@@ -30,4 +30,5 @@ class HistoryTransfer extends Model
     public function saldo_penerima() {
         return $this->hasMany('App\Models\SaldoUser','number_card','penerima');
     }
+
 }

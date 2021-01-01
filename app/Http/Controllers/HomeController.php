@@ -37,6 +37,18 @@ class HomeController extends Controller
             'SaldoUsers' => SaldoUser::with('user')->get(),
             'HistoryTransfer' => HistoryTransfer::with('saldo_pengirim','saldo_penerima')->get(),
         ];
+//
+//        $get_log_id_penerima = Activity::where('log_name','Transfer_Saldo')
+//            ->whereHas('historytf', function ($query)  {
+//                $get_user_id_saldo = SaldoUser::where('user_id', Auth::user()->id)->first();
+//                if($get_user_id_saldo) {
+//                    $query->where('penerima',$get_user_id_saldo->number_card);
+//                    $query->orWhere('pengirim', Auth::user()->id);
+//                }
+//            })
+//            ->get();
+//
+//        dd($get_log_id_penerima);
 
         return view('home',compact('data'));
     }

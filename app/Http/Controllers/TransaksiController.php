@@ -26,7 +26,17 @@ class TransaksiController extends Controller
     public function index()
     {
         if(\request()->ajax()) {
-            $data = Activity::where('log_name','Transfer_Saldo')->get();
+
+            $data =Activity::where('log_name','Transfer_Saldo')
+                ->whereHas('historytf', function ($query)  {
+                    $get_user_id_saldo = SaldoUser::where('user_id', Auth::user()->id)->first();
+                    if($get_user_id_saldo) {
+                        $query->where('penerima',$get_user_id_saldo->number_card);
+                        $query->orWhere('pengirim', Auth::user()->id);
+                    }
+                })
+                ->get();
+
             return Datatables::of($data)
                 ->addColumn('status', function ($data) {
                     $status_menerima = [];
@@ -46,7 +56,20 @@ class TransaksiController extends Controller
                 ->addColumn('name_info', function ($data) {
                     foreach($data->properties as $i) {
                         $get_name = User::where('id',$i['pengirim'])->first();
-                        return $i['pengirim'] == Auth::user()->id ? "To : "."". Auth::user()->name : "Form : "."".$get_name->name;
+                        $status_menerima = [];
+                        $status_pengirim = [];
+
+                        foreach ($i['saldo_penerima'] as $penerima) {
+                            $get_name_penerima =  SaldoUser::with('user')->where('user_id',$penerima['user_id'])->first();
+                        }
+
+                        if($data->causer_id === Auth::user()->id) {
+                            $status_pengirim = 'Mentransfer';
+                        } else {
+                            $status_menerima = 'DiTransfer';
+                        }
+
+                        return $status_pengirim ? "To : "."". $get_name_penerima->user->name : "Form : "."". $get_name->name;
                     }
                 })
 
