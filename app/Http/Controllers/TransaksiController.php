@@ -118,7 +118,7 @@ class TransaksiController extends Controller
     public function indexTopUp() {
 
         if(\request()->ajax()) {
-            $data = Activity::where('log_name','Top_Up_Saldo')->get();
+            $data = Activity::where('log_name','Top_Up_Saldo')->where('causer_id', Auth::user()->id)->get();
             return Datatables::of($data)
                 ->addColumn('status', function ($data) {
                     $name_success = "Top Up Saldo";
@@ -162,7 +162,7 @@ class TransaksiController extends Controller
 
     public function indexWithdraw() {
         if(\request()->ajax()) {
-            $data = Activity::where('log_name','Withdraw_Saldo')->get();
+            $data = Activity::where('log_name','Withdraw_Saldo')->where('causer_id', Auth::user()->id)->get();
             return Datatables::of($data)
                 ->addColumn('status', function ($data) {
                     $name_success = "Withdraw Saldo";

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-//    return \Spatie\Activitylog\Models\Activity::all();
+    return \Spatie\Activitylog\Models\Activity::all();
     return view('welcome');
 });
 
