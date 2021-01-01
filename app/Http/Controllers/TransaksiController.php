@@ -81,8 +81,9 @@ class TransaksiController extends Controller
                             if($data->causer_id === Auth::user()->id) {
                                 $nbcard_pengirim = $card_pengirim['number_card'];
                             } else {
-                               foreach($i['saldo_penerima'] as $card_menerima) {
-                                   $nbcard_menerima = $card_menerima['number_card'];
+                               foreach($i['saldo_pengirim'] as $card_menerima) {
+                                   $nbcard_menerima =  $card_menerima['number_card'];
+//                                   dd($card_menerima['number_card']);
                                }
                             }
                             return ($get_cuaser) ? $nbcard_pengirim : $nbcard_menerima ;
