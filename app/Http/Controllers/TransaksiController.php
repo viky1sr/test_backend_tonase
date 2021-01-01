@@ -240,6 +240,7 @@ class TransaksiController extends Controller
 
 
         SaldoUser::firstOrCreate($input);
+
         return response()->json([
             'status'    => "ok",
             'messages' => "Berhasil Membuat Account Saldo",
@@ -354,7 +355,7 @@ class TransaksiController extends Controller
 
         $r = ['.',',00','Rp'];
 
-//        jika ingin mengunakan unit testing $get_user harp di komen dulu line 328
+//        jika ingin mengunakan unit testing $get_user harp di komen dulu line 360
 
         $get_user = SaldoUser::where('user_id',Auth::user()->id)->first();
 
@@ -380,7 +381,7 @@ class TransaksiController extends Controller
 
         HistoryTopUp::firstOrCreate($input);
 
-//        jika ingin mengunakan unit testing $top_up di komentarin dulu line 354-358
+//        jika ingin mengunakan unit testing $top_up di komentarin dulu line 386-390
 
         $top_up = [
             'amount' => $get_user->amount + str_replace($r,'',  $data['amount'])
