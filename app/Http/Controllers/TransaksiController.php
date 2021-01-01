@@ -274,6 +274,24 @@ class TransaksiController extends Controller
             ],422);
         }
 
+        foreach ($get_users as $item) {
+            if($item->number_card !== $data['penerima']) {
+                return response()->json([
+                    'status' => 'fail',
+                    'messages' => 'Penerima tidak ada / Number card salah',
+                ],422);
+            }
+        }
+
+        $get_penerima = SaldoUser::where('number_card',$data['penerima'])->first();
+
+        if(!$get_penerima) {
+            return response()->json([
+                'status' => 'fail',
+                'messages' => 'Number card belum terdaftar.',
+            ],422);
+        }
+
         $input = [
             'pengirim' => Auth::user()->id,
             'penerima' => (int)$data['penerima'],
@@ -287,16 +305,6 @@ class TransaksiController extends Controller
             ],422);
         }
 
-        foreach ($get_users as $item) {
-            if($item->number_card != $data['penerima']) {
-                return response()->json([
-                    'status' => 'fail',
-                    'messages' => 'Penerima tidak ada / Number card salah',
-                ],422);
-            }
-        }
-
-
         $trasnfer = HistoryTransfer::create($input);
 
 
@@ -304,23 +312,17 @@ class TransaksiController extends Controller
             'amount' => $get_user->amount - str_replace($r,'',  $data['amount'])
         ];
 
-        SaldoUser::where('user_id',Auth::user()->id)->update($pengirim);
-
-        $get_penerima = SaldoUser::where('number_card',$trasnfer->penerima)->first();
-
-        if(!$get_penerima) {
-            return response()->json([
-                'status' => 'fail',
-                'messages' => 'Number card belum terdaftar',
-            ],422);
+        if($trasnfer) {
+            SaldoUser::where('user_id',Auth::user()->id)->update($pengirim);
         }
 
         $penerima = [
-            'amount' => isset($get_penerima) ? $get_penerima->amount + str_replace($r,'',  $data['amount']) : ""
+            'amount' => $get_penerima->amount +  str_replace($r,'',  $data['amount'])
         ];
 
-        SaldoUser::where('number_card',$trasnfer->penerima)->update($penerima);
-
+        if($trasnfer) {
+            SaldoUser::where('number_card',$trasnfer->penerima)->update($penerima);
+        }
 
         return response()->json([
             'status' => 'ok',
