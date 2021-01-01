@@ -23,7 +23,7 @@
     <link href="{{asset('css/toastr.min.css')}}" rel="stylesheet">
 
     <script src="{{ mix('js/app.js') }}"></script>
-    <script src="{{ asset('vendor/datatables/buttons.server-side.js') }}"></script>
+{{--    <script src="{{ asset('vendor/datatables/buttons.server-side.js') }}"></script>--}}
     @stack('scripts')
 </head>
 <body>

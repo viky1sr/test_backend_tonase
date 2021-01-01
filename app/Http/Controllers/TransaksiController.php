@@ -33,8 +33,10 @@ class TransaksiController extends Controller
                     if($get_user_id_saldo) {
                         $query->where('penerima',$get_user_id_saldo->number_card);
                         $query->orWhere('pengirim', Auth::user()->id);
+//                        dd($query->where('causer_id', Auth::user()->id));
                     } else {
                         $query->where('pengirim', Auth::user()->id);
+                        $query->where('causer_id', Auth::user()->id);
                     }
                 })
                 ->get();
@@ -256,26 +258,9 @@ class TransaksiController extends Controller
         $get_users = SaldoUser::where('number_card',$data['penerima'])->get();
 
 
-        foreach ($get_users as $item) {
-            if($item->number_card != $data['penerima']) {
-                return response()->json([
-                    'status' => 'fail',
-                    'messages' => 'Penerima tidak ada / Number card salah',
-                ],422);
-            }
-        }
-
-        if(isset($get_user->amount) ? $get_user->amount === null : '' ) {
-            return response()->json([
-                'status' => 'fail',
-                'messages' => 'Anda belum mempunyain rekening',
-            ],422);
-        }
-
-
         $r = ['.',',00','Rp'];
 
-        if(isset($get_user->amount) ? $get_user->amount  < str_replace($r,'',  $data['amount']) : '') {
+        if(isset($get_user) ? $get_user->amount  < str_replace($r,'',  $data['amount']) : '') {
             return response()->json([
                 'status' => 'fail',
                 'messages' => 'Jumlah saldo anda tidak mencukupin',
@@ -295,6 +280,22 @@ class TransaksiController extends Controller
             'amount' => str_replace($r,'',  $data['amount']),
         ];
 
+        if($data['penerima'] === $get_user->number_card) {
+            return response()->json([
+                'status' => 'fail',
+                'messages' => 'Tidak bisa mengirin ke akun anda sendiri',
+            ],422);
+        }
+
+        foreach ($get_users as $item) {
+            if($item->number_card != $data['penerima']) {
+                return response()->json([
+                    'status' => 'fail',
+                    'messages' => 'Penerima tidak ada / Number card salah',
+                ],422);
+            }
+        }
+
 
         $trasnfer = HistoryTransfer::create($input);
 
@@ -307,8 +308,15 @@ class TransaksiController extends Controller
 
         $get_penerima = SaldoUser::where('number_card',$trasnfer->penerima)->first();
 
+        if(!$get_penerima) {
+            return response()->json([
+                'status' => 'fail',
+                'messages' => 'Number card belum terdaftar',
+            ],422);
+        }
+
         $penerima = [
-            'amount' => $get_penerima->amount + str_replace($r,'',  $data['amount'])
+            'amount' => isset($get_penerima) ? $get_penerima->amount + str_replace($r,'',  $data['amount']) : ""
         ];
 
         SaldoUser::where('number_card',$trasnfer->penerima)->update($penerima);
